@@ -1,0 +1,22 @@
+import 'package:educational_app/core/models/courses.dart';
+import 'package:educational_app/features/home_screen/data/home_repo.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+part 'courses_state.dart';
+
+
+class CoursesCubit extends Cubit<CoursesState>{
+  CoursesCubit(this.homeRepo): super(CoursesInitial());
+
+  final HomeRepo homeRepo;
+  Future<void> fetchCourses() async {
+    emit(CoursesLoading());
+    final result = await homeRepo.fetchCourses();
+    result.fold((failure) {
+      emit(CoursesFailure(failure.errMessage));
+    }, (books) {
+      emit(CoursesSuccess(books));
+    });
+  }
+}
+
